@@ -16,7 +16,7 @@ Date of finished: **.10.2023
 ```
 minikube minikube start
 ```
-![minikube minikube start](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/main/lab1/images/1.png)
+![minikube minikube start](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab1/images/1.png)
 
 
 ## Создание YAML файла:
@@ -56,4 +56,4 @@ minikube kubectl -- port-forward service/vault 8200:8200 --address 0.0.0.0
 ```
 kubectl logs vault
 ```
-![kubectl logs vault](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/main/lab1/images/2.png)
+![kubectl logs vault](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab1/images/2.png)

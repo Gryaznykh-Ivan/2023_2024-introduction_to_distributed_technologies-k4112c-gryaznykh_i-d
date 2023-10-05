@@ -56,6 +56,10 @@ kubectl logs vault
 ```
 ![kubectl logs vault](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab1/images/2.png)
 
+## Интерфейс Vault:
+![kubectl logs vault](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab1/images/4.png)
+![kubectl logs vault](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab1/images/5.png)
+
 
 # Схема
 ![Schema](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab1/images/3.png)

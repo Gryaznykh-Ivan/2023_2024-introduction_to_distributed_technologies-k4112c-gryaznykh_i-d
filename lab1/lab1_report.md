@@ -6,7 +6,7 @@ Group: K4112c
 Author: Gryaznykh Ivan Dmitrievich
 Lab: Lab1
 Date of create: 01.10.2023
-Date of finished: **.10.2023
+Date of finished: 05.10.2023
 
 # Ход выполнения работы
 

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app-deploy
+  template:
+    metadata:
+      labels:
+        app: app-deploy
+    spec:
+      containers:
+      - name: app-deploy
+        image: ifilyaninitmo/itdt-contained-frontend:master
+        env:
+        - name:  REACT_APP_USERNAME
+          value: 'GID'
+        - name:  REACT_APP_COMPANY_NAME
+          value: 'itmo'
+        ports:
+        - containerPort: 3000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service-name
+spec:
+  selector:
+    app: app-deploy
+  ports:
+  - protocol: TCP
+    port: 2000
+    targetPort: 3000
+  

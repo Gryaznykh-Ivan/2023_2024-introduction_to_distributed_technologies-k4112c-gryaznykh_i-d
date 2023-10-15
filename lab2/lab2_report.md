@@ -133,4 +133,4 @@ minikube kubectl -- port-forward service/app-service-name 8080:2000 --address 0.
 
 
 # Схема
-![Schema](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/6.png)
+![Schema](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/6.jpg)

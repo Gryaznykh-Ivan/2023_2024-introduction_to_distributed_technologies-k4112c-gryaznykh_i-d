@@ -18,7 +18,7 @@ Date of finished: 25.10.2023
 ```
 minikube minikube start
 ```
-![minikube minikube start](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/7.png)
+![minikube minikube start](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/1.png)
 
 Команда "minikube start" используется для запуска локального кластера Kubernetes с использованием Minikube. После выполнения этой команды произойдет следующее:
 
@@ -36,72 +36,120 @@ minikube minikube start
 
 ## Создание YAML файла:
 ```
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: app-deploy
+  name: app-config
+data:
+  REACT_APP_USERNAME: "GID"
+  REACT_APP_COMPANY_NAME: "ITMO"
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: itdt-contained-frontend
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: app-deploy
+      app: itdt-contained-frontend
   template:
     metadata:
       labels:
-        app: app-deploy
+        app: itdt-contained-frontend
     spec:
       containers:
-      - name: app-deploy
-        image: ifilyaninitmo/itdt-contained-frontend:master
-        env:
-        - name:  REACT_APP_USERNAME
-          value: 'GID'
-        - name:  REACT_APP_COMPANY_NAME
-          value: 'itmo'
-        ports:
-        - containerPort: 3000
+        - name: itdt-contained-frontend
+          image: ifilyaninitmo/itdt-contained-frontend:master
+          env:
+            - name: REACT_APP_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REACT_APP_USERNAME
+            - name: REACT_APP_COMPANY_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REACT_APP_COMPANY_NAME
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-service-name
+  name: app-service
 spec:
-  selector:
-    app: app-deploy
+  type: ClusterIP
   ports:
-  - protocol: TCP
-    port: 2000
-    targetPort: 3000
-  
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+  selector:
+    app: itdt-contained-frontend
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    -----BEGIN CERTIFICATE-----
+
+    -----END CERTIFICATE-----
+  tls.key: |
+    -----BEGIN PRIVATE KEY-----
+
+    -----END PRIVATE KEY-----
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+spec:
+  tls:
+    - hosts:
+        - gidapp.com
+      secretName: app-secret
+  rules:
+    - host: gidapp.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-service
+                port:
+                  number: 3000
 ```
 
-Deployment:
+Этот YAML файл описывает различные ресурсы Kubernetes, которые могут быть использованы для развертывания приложения. Вот краткое описание каждого блока:
 
-apiVersion и kind определяют, что это ресурс деплоймента.
-metadata содержит метаданные деплоймента, включая его имя.
-spec определяет конфигурацию деплоймента:
-replicas устанавливает количество реплик подов (в данном случае 2).
-selector определяет, какие поды должны быть управляемы деплойментом.
-template содержит шаблон для создания подов:
-metadata устанавливает метки для подов.
-spec определяет контейнеры, которые будут созданы в подах:
-name - имя контейнера.
-image - образ контейнера для развертывания.
-env - переменные окружения, которые будут доступны в контейнере.
-ports - определяет порты, на которых контейнер слушает внутри пода.
+1. **ConfigMap (Конфигурационная карта)**:
+   - **Имя**: `app-config`
+   - **Данные**: Содержит ключ-значение для параметров, таких как `REACT_APP_USERNAME` (значение: "GID") и `REACT_APP_COMPANY_NAME` (значение: "ITMO").
 
-Service:
+2. **ReplicaSet (Набор реплик)**:
+   - **Имя**: `itdt-contained-frontend`
+   - **Спецификация**: Создает и управляет репликами приложения `itdt-contained-frontend`.
+   - **Контейнеры**: Использует образ `ifilyaninitmo/itdt-contained-frontend:master` и передает переменные среды из ConfigMap для `REACT_APP_USERNAME` и `REACT_APP_COMPANY_NAME`.
 
-apiVersion и kind определяют, что это ресурс сервиса.
-metadata содержит метаданные сервиса, включая его имя.
-spec определяет конфигурацию сервиса:
-selector указывает, какие поды будут обслуживаться этим сервисом, основываясь на метках подов.
-ports определяет порты, на которых сервис будет доступен:
-protocol устанавливает протокол (TCP в данном случае).
-port - порт, по которому сервис будет доступен снаружи.
-targetPort - порт, на котором контейнеры в подах слушают запросы.
+3. **Service (Сервис)**:
+   - **Имя**: `app-service`
+   - **Тип**: ClusterIP (доступен только внутри кластера)
+   - **Порт**: Пробрасывает трафик с порта 3000 на поды, соответствующие Selector'у `app: itdt-contained-frontend`.
+
+4. **Secret (Секрет)**:
+   - **Имя**: `app-secret`
+   - **Тип**: `kubernetes.io/tls`
+   - **Данные**: Содержит TLS-сертификат и приватный ключ для использования в безопасной связи.
+
+5. **Ingress (Вход)**:
+   - **Имя**: `app-ingress`
+   - **Спецификация TLS**: Ассоциирует секрет `app-secret` с хостом `gidapp.com` для обеспечения безопасного соединения.
+   - **Правила маршрутизации**: Настроены для перенаправления трафика с хоста `gidapp.com` на сервис `app-service` через путь `/`.
 
 ## Применим файл конфигурации:
 ```
@@ -110,29 +158,29 @@ minikube kubectl apply -f app.yaml
 
 Команда minikube kubectl apply -f app.yaml представляет собой команду для развертывания приложения в локальном кластере Kubernetes, управляемом Minikube.
 
-![get all](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/3.png)
+![get all](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/3.png)
 
 
-## Прокидывание порта:
+## Включим ingress и запустим tunnel 
 ```
-minikube kubectl -- port-forward service/app-service-name 8080:2000 --address 0.0.0.0
+minikube addons enable ingress
+minikube tunnel
 ```
 
-Эта команда используется для настройки перенаправления портов (port forwarding) из локальной машины внутрь сервиса, который запущен в локальном кластере Minikube
+Команда minikube addons enable ingress активирует дополнение (addon) под названием Ingress в Minikube. Ingress - это механизм в Kubernetes, который управляет внешним доступом к службам внутри кластера. Активация Ingress позволяет использовать эту функциональность для маршрутизации внешнего трафика в приложения в вашем локальном кластере Minikube.
+![port-forward](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/7.png)
 
-![port-forward](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/2.png)
+Команда minikube tunnel используется для создания сетевого туннеля между вашим локальным кластером Minikube и сетью вашей машины. Это полезно, когда ваши приложения в кластере требуют внешнего доступа извне или когда они должны быть доступны из других устройств в вашей сети. minikube tunnel устанавливает соединение между внутренними IP-адресами вашего кластера и внешними IP-адресами вашей машины, обеспечивая возможность общения с сервисами в кластере через внешний IP-адрес вашей машины.
+
+![port-forward](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/8.png)
 
 
 # Интерфейс приложения:
-![WEB SITE](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/1.png)
+![WEB SITE](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/5.png)
 
-Значения User и Company будут соответствовать переменным окружения, а имя контейнера и IP могут меняться в зависисмости от того, в какой контейнер попал запрос.
-
-# Логи подов
-![log 1](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/4.png)
-![log 2](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/5.png)
-
+# Сертификат:
+![WEB SITE](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/6.png)
 
 
 # Схема
-![Schema](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/6.jpg)
+![Schema](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/9.jpg)

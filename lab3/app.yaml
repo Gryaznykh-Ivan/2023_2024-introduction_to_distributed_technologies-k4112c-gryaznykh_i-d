@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  REACT_APP_USERNAME: GID
-  REACT_APP_COMPANY_NAME: ITMO
+  REACT_APP_USERNAME: "GID"
+  REACT_APP_COMPANY_NAME: "ITMO"
 
 ---
 apiVersion: apps/v1
@@ -24,9 +24,18 @@ spec:
       containers:
         - name: itdt-contained-frontend
           image: ifilyaninitmo/itdt-contained-frontend:master
-          envFrom:
-            - configMapRef:
-                name: app-config
+          env:
+            - name: REACT_APP_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REACT_APP_USERNAME
+            - name: REACT_APP_COMPANY_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REACT_APP_COMPANY_NAME
+
 ---
 apiVersion: v1
 kind: Service
@@ -41,13 +50,32 @@ spec:
   selector:
     app: itdt-contained-frontend
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    -----BEGIN CERTIFICATE-----
+
+    -----END CERTIFICATE-----
+  tls.key: |
+    -----BEGIN PRIVATE KEY-----
+
+    -----END PRIVATE KEY-----
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-ingress
 spec:
+  tls:
+    - hosts:
+        - gidapp.com
+      secretName: app-secret
   rules:
-    - host: gid-app.com
+    - host: gidapp.com
       http:
         paths:
           - path: /

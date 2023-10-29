@@ -34,6 +34,13 @@ minikube minikube start
 
 Настройка kubectl: Minikube настроит инструмент командной строки kubectl так, чтобы он указывал на ваш запущенный локальный кластер. Это позволит вам управлять кластером с помощью kubectl.
 
+## Создание сертификата:
+```
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=gidapp.com"
+```
+
+После выполнения этой операции появляется 2 файла `tls.crt` и `tls.key`
+
 ## Создание YAML файла:
 ```
 apiVersion: v1
@@ -168,18 +175,18 @@ minikube tunnel
 ```
 
 Команда minikube addons enable ingress активирует дополнение (addon) под названием Ingress в Minikube. Ingress - это механизм в Kubernetes, который управляет внешним доступом к службам внутри кластера. Активация Ingress позволяет использовать эту функциональность для маршрутизации внешнего трафика в приложения в вашем локальном кластере Minikube.
-![port-forward](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/7.jpg)
+![addons ingress](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/7.jpg)
 
 Команда minikube tunnel используется для создания сетевого туннеля между вашим локальным кластером Minikube и сетью вашей машины. Это полезно, когда ваши приложения в кластере требуют внешнего доступа извне или когда они должны быть доступны из других устройств в вашей сети. minikube tunnel устанавливает соединение между внутренними IP-адресами вашего кластера и внешними IP-адресами вашей машины, обеспечивая возможность общения с сервисами в кластере через внешний IP-адрес вашей машины.
 
-![port-forward](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/8.jpg)
+![tunnel](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/8.jpg)
 
 
 # Интерфейс приложения:
 ![WEB SITE](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/5.jpg)
 
 # Сертификат:
-![WEB SITE](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/6.jpg)
+![SERT](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab3/images/6.jpg)
 
 
 # Схема

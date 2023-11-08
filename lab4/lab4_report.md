@@ -9,7 +9,7 @@ Date of create: 01.10.2023
 Date of finished: 09.11.2023
 
 
-# Лабораторная работа №3 "Сертификаты и "секреты" в Minikube, безопасное хранение данных."
+# Лабораторная работа №4 "Сети связи в Minikube, CNI и CoreDNS"
 
 # Ход выполнения работы
 
@@ -17,17 +17,17 @@ Date of finished: 09.11.2023
 ```
 minikube start --network-plugin=cni --cni=calico --nodes 2 -p multinode
 ```
-![Start up](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/1.png)
+![Start up](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/1.jpg)
 
 Проверим текущее состояние
 ```
 kubectl get nodes
 kubectl get pods -l k8s-app=calico-node -A
 ```
-![Pods State](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/2.png)
+![Pods State](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/2.jpg)
 
 ### Предположим что у нас 2 стойки. Проставим для них метки.
-![DIAGRAM](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/3.png)
+![DIAGRAM](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/3.jpg)
 
 ### Напишем манифест для IPPOOL Calico
 ```
@@ -56,7 +56,7 @@ spec:
 ```
 kubectl-calico apply -f calico.yaml --allow-version-mismatch --config=calico.cfg.yaml
 ```
-![DIAGRAM](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/4.png)
+![DIAGRAM](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/4.jpg)
 
 ### Теперь нужно удалить дефотный IPPOOL,
 ```
@@ -123,15 +123,16 @@ kubectl apply -f app.yaml
 ```
 kubectl port-forward services/app-service-name 3000:3000
 ```
-![port-forward](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/5.png)
-![Сайт](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/6.png)
+![port-forward](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/5.jpg)
+![Сайт](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/6.jpg)
 
+Используемый сервис не балансирует нагрузку, поэтому name и ip приложения не меняются
 
 ### 7. ПИНГ
 ```
 kubectl exec -it app-deploy-7cccd8db85-5l9c8 -- ping 192.168.0.129
 ```
-![ПИНГ](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/7.png)
+![ПИНГ](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/7.jpg)
 
 ## Схема
-![DIAGRAM](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab2/images/8.png)
+![DIAGRAM](https://github.com/Gryaznykh-Ivan/2023_2024-introduction_to_distributed_technologies-k4112c-gryaznykh_i-d/blob/master/lab4/images/8.jpg)

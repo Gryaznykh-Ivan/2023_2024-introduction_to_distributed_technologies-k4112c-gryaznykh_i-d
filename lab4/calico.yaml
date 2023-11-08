@@ -1,0 +1,20 @@
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: first
+spec:
+  cidr: 192.168.0.0/24
+  ipipMode: Always
+  natOutgoing: true
+  nodeSelector: rack == "second"
+
+---
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: second
+spec:
+  cidr: 192.168.1.0/24
+  ipipMode: Always
+  natOutgoing: true
+  nodeSelector: rack == "first"
